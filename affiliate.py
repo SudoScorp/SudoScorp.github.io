@@ -139,14 +139,14 @@ def product_page(p, siblings):
 
 
 def category_page(cat, items):
-    body = f'<p class="disc">{esc(CFG["disclosure"])}</p><h1>Best {esc(cat.title())} Tools Compared</h1>'
+    body = f'<p class="disc">{esc(CFG["disclosure"])}</p><h1>Best {esc(__import__("string").capwords(cat))} Tools Compared</h1>'
     body += "<p>Listed in the order added; this is not a paid ranking.</p>"
     for p in items:
         body += f'<div class="card"><h2><a href="/reviews/{p["slug"]}.html">{esc(p["name"])}</a></h2><p>{esc(p.get("description",""))}</p>'
         if p["pros"]:
             body += f"<p><b>Pros:</b> {esc('; '.join(p['pros'][:3]))}</p>"
         body += f"<p>{cta(p, 'compare')}</p></div>"
-    return page(f"Best {cat.title()} Tools Compared", f"Compare {cat} options.", body, f"/best/{slugify(cat)}.html")
+    return page(f"Best {__import__("string").capwords(cat)} Tools Compared", f"Compare {cat} options.", body, f"/best/{slugify(cat)}.html")
 
 
 def build():
@@ -192,8 +192,8 @@ def build():
                 urls.append(u)
                 n += 1
     idx = f'<p class="disc">{esc(CFG["disclosure"])}</p><h1>{esc(CFG["site_name"])}</h1><p>{esc(CFG["tagline"])}</p>'
-    idx += "".join(f'<div class="card"><a href="/best/{slugify(c)}.html"><b>Best {esc(c.title())} Tools</b></a> ({len(i)})</div>' for c, i in cats.items())
-    idx += "<h2>Guides</h2><ul>" + "".join(f'<li><a href="/guides/{g["slug"]}.html">{esc(g["title"])}</a></li>' for g in guides) + "</ul>"
+    idx += "".join(f'<div class="card"><a href="/best/{slugify(c)}.html"><b>Best {esc(__import__("string").capwords(c))} Tools</b></a> ({len(i)})</div>' for c, i in cats.items())
+    idx += (("<h2>Guides</h2><ul>" + "".join(f'<li><a href="/guides/{g["slug"]}.html">{esc(g["title"])}</a></li>' for g in guides) + "</ul>") if guides else "")
     idx += "<h2>All reviews</h2><ul>" + "".join(f'<li><a href="/reviews/{p["slug"]}.html">{esc(p["name"])}</a></li>' for p in products) + "</ul>"
     (SITE / "index.html").write_text(page(CFG["site_name"], CFG["tagline"], idx, "/"), encoding="utf-8")
     (SITE / "disclosure.html").write_text(page("Affiliate Disclosure", "How we earn money", f"<h1>Affiliate Disclosure</h1><p>{esc(CFG['disclosure'])}</p><p>We only describe products using information supplied by the vendors or our own testing notes, and we list drawbacks where known.</p>", "/disclosure.html"), encoding="utf-8")
