@@ -1,0 +1,4 @@
+site/
+clicks.db
+cache/
+__pycache__/

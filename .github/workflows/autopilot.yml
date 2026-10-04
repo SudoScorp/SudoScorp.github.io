@@ -1,0 +1,47 @@
+name: autopilot
+on:
+  schedule:
+    - cron: "0 6 * * *"   # daily, 06:00 UTC
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths: ["products.json", "feeds.json", "config.json"]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Ingest feeds, build site, ping search engines
+        env:
+          BASE_URL: ${{ vars.BASE_URL }}
+          AFF_ID_1: ${{ secrets.AFF_ID_1 }}
+          AFF_ID_2: ${{ secrets.AFF_ID_2 }}
+        run: python autopilot.py run
+      - name: Save newly ingested products
+        run: |
+          git config user.name "autopilot"
+          git config user.email "autopilot@users.noreply.github.com"
+          git add products.json
+          git diff --cached --quiet || (git commit -m "autopilot: new products" && git push)
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4

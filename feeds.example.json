@@ -1,0 +1,9 @@
+[
+  {
+    "name": "my-network",
+    "url": "https://YOUR-NETWORK/product-feed.csv",
+    "format": "csv",
+    "link_template": "{url}?aff={AFF_ID_1}",
+    "default_category": "software"
+  }
+]
