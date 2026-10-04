@@ -5,7 +5,7 @@ on:
   workflow_dispatch: {}
   push:
     branches: [main]
-    paths: ["products.json", "feeds.json", "config.json"]
+    paths: ["products.json", "feeds.json", "config.json", "guides.json", "affiliate.py", "autopilot.py"]
 
 permissions:
   contents: write
